@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -28,12 +29,16 @@ public class ProductServiceImpl implements ProductService {
     }
     // update product
     public Product updateProduct(Long id,Product updatedProduct){
-        Product existing = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
-        existing.setName(updatedProduct.getName());
-        existing.setDescription(updatedProduct.getDescription());
-        existing.setPrice(updatedProduct.getPrice());
-        existing.setImageUrl(updatedProduct.getImageUrl());
-        return productRepository.save(existing);
+        Optional<Product> existing = productRepository.findById(id);
+        if (existing.isPresent()){
+            Product product = existing.get();
+            product.setName(updatedProduct.getName());
+            product.setDescription(updatedProduct.getDescription());
+            product.setPrice(updatedProduct.getPrice());
+            product.setImageUrl(updatedProduct.getImageUrl());
+            return productRepository.save(product);
+        }
+        return null;
     }
     // delete product
     public void deleteProduct(Long id){
